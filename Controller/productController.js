@@ -33,10 +33,13 @@ export const addProduct = async (req, res) => {
     // Handle image upload - support both file upload and URL
     if (req.files && req.files.length > 0) {
       // File upload via multer
+      // Handle both memory storage (buffer) and disk storage (path)
       const uploadedImages = await Promise.all(
-        req.files.map((file) =>
-          uploadCloudinary(file.path, "products")
-        )
+        req.files.map((file) => {
+          // Memory storage provides buffer, disk storage provides path
+          const fileInput = file.buffer || file.path;
+          return uploadCloudinary(fileInput, "products");
+        })
       );
 
       images = uploadedImages.map((img) => ({
@@ -152,9 +155,11 @@ export const updateProduct = async (req, res) => {
       }
 
       const uploadedImages = await Promise.all(
-        req.files.map((file) =>
-          uploadCloudinary(file.path, "products")
-        )
+        req.files.map((file) => {
+          // Memory storage provides buffer, disk storage provides path
+          const fileInput = file.buffer || file.path;
+          return uploadCloudinary(fileInput, "products");
+        })
       );
 
       product.images = uploadedImages.map((img) => ({
