@@ -201,14 +201,11 @@ export const deleteProduct = async (req, res) => {
     // Delete images from cloudinary (only if they exist and have cloudinaryPublicId)
     if (product.images && Array.isArray(product.images)) {
       for (let img of product.images) {
-        // Only delete from Cloudinary if the image has a cloudinaryPublicId
-        // (skip URL-based images that don't have this property)
         if (img.cloudinaryPublicId) {
           try {
             await cloudinary.v2.uploader.destroy(img.cloudinaryPublicId);
           } catch (cloudinaryError) {
             console.error("Failed to delete image from Cloudinary:", cloudinaryError);
-            // Continue with product deletion even if Cloudinary deletion fails
           }
         }
       }
